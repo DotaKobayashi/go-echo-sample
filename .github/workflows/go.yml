@@ -16,7 +16,8 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
 
-    - name: Lint
-      run: |
-        go get -u golang.org/x/lint/golint  
-        golint main.go
+    - name: Install golint
+      run: go get -u golang.org/x/lint/golint
+
+    - name: golint
+      run: golint main.go
