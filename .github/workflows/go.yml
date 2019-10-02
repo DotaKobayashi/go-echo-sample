@@ -17,8 +17,9 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Run go mod download
+      working-directory: ./app
       run: |
-        cd ./app
+        pwd
         go mod download
 
     - name: Install golangci-lint
@@ -27,12 +28,14 @@ jobs:
         sudo mv ./bin/golangci-lint $GOPATH/bin/
 
     - name: Run golangci-lint
+      working-directory: ./app
       run: >
-        golangci-lint run ./app/... \
+        golangci-lint run \
           --tests \
           --enable-all \
           --disable gochecknoglobals \
           --disable gochecknoinits
 
     - name: Run tests
-      run: go test -race -v ./app/...
+      working-directory: ./app
+      run: go test -race -v ./...
