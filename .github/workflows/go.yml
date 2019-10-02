@@ -26,11 +26,11 @@ jobs:
 
     - name: Run golangci-lint
       run: >
-        golangci-lint run \
+        golangci-lint run ./app/... \
           --tests \
           --enable-all \
           --disable gochecknoglobals \
           --disable gochecknoinits
 
     - name: Run tests
-      run: go test -race -v ./...
+      run: go test -race -v ./app/...
