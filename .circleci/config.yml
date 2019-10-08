@@ -1,0 +1,38 @@
+version: 2.1
+orbs:
+  gcp-cli: circleci/gcp-cli@1.3.0
+
+jobs:
+  migrate-develop:
+    working_directory: ~/workspace
+    docker:
+      - image: circleci/golang:1.12
+        environment:
+          GO111MODULE: "on"
+    steps:
+      - checkout
+      - run:
+          name: Migrate the staging database
+          command: |
+            # env
+            echo "export GCLOUD_SQL_DSN=$GCLOUD_SQL_DSN" >> $BASH_ENV
+            echo "export GCLOUD_SQL_INSTANCE=$GCLOUD_SQL_INSTANCE" >> $BASH_ENV
+            source $BASH_ENV
+            # Install the cloud_sql_proxy
+            echo $GCLOUD_SQL_SERVICE_KEY > cloud_proxy.key
+            wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
+            chmod +x cloud_sql_proxy
+            sudo mkdir /cloudsql
+            sudo chmod 777 /cloudsql
+            ./cloud_sql_proxy -dir=/cloudsql -instances=$GCLOUD_SQL_INSTANCE -credential_file=cloud_proxy.key &
+            # db migrate
+            go get -u github.com/pressly/goose/cmd/goose
+            goose -dir ./migrations mysql $GCLOUD_SQL_DSN up
+workflows:
+  version: 2
+  build:
+    jobs:
+      - migrate-develop:
+          filters:
+            branches:
+              only: develop
