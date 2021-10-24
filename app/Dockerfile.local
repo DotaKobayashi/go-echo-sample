@@ -1,0 +1,7 @@
+FROM golang:1.17.2-alpine3.14
+
+WORKDIR /app
+
+RUN apk add --no-cache git && \
+   go install github.com/cosmtrek/air@latest && \
+   go install github.com/go-delve/delve/cmd/dlv@latest
