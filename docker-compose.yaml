@@ -3,10 +3,10 @@ services:
   app:
     build:
       context: ./app
-      target: build
+      dockerfile: ./Dockerfile.local
     ports:
       - 8080:8080
     volumes:
       - ./app:/app
     tty: true
-    command: realize start --run --no-config
+    command: air
